@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "the_schnitz"
+version = "0.0.1"
+
+dependencies = [
+  "Flask",
+  "click",
+  "msgpack",
+  "pika",
+  "playsound3",
+]
+
+[project.scripts]
+telegram-client = "the_schnitz.cli:telegram_client"
+audio-client = "the_schnitz.cli:audio_client"
+test_it = "the_schnitz.cli:test_it"
