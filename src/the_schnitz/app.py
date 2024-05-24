@@ -1,21 +1,18 @@
-from flask import Flask
-from msgpack import packb
+import os
 
-from the_schnitz.rabbitmq import init_rabbitmq, get_rabbitmq_producer
+from flask import Flask
+
+from the_schnitz.rabbitmq import init_rabbitmq
+from the_schnitz.views import discovery
+from the_schnitz.config_loader import locations
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('the_schnitz.default_config')
+    app.config.from_file(os.path.join(os.getcwd(), 'locations.yml'), load=locations.load)
 
-    app = init_rabbitmq(app)
-
-    @app.route("/")
-    def publish():
-        data = {'route': 'publish'}
-        producer = get_rabbitmq_producer()
-        producer.publish(packb(data))
-
-        return "<p>Hello, World!</p>"
+    init_rabbitmq(app)
+    app.register_blueprint(discovery.bp)
 
     return app

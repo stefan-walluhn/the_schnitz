@@ -12,6 +12,7 @@ dependencies = [
   "msgpack",
   "pika",
   "playsound3",
+  "pyyaml",
 ]
 
 [project.scripts]

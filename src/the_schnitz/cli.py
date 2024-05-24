@@ -6,7 +6,7 @@ from flask.cli import FlaskGroup
 
 from the_schnitz.app import create_app
 from the_schnitz.rabbitmq import RabbitMQConsumer, get_rabbitmq_channel
-from the_schnitz.callbacks import MessagePackCallback, AudioCallback
+from the_schnitz.callbacks import AudioCallback
 
 
 class QueueParamType(click.ParamType):
@@ -31,7 +31,7 @@ def log_client(queue):
         get_rabbitmq_channel(),
         current_app.config['RABBITMQ_EXCHANGE'],
         queue,
-        MessagePackCallback(print)
+        print
     )
     client.subscribe()
 
@@ -44,5 +44,5 @@ def audio_client(queue, audio_file):
         get_rabbitmq_channel(),
         current_app.config['RABBITMQ_EXCHANGE'],
         queue,
-        MessagePackCallback(AudioCallback(audio_file)))
+        AudioCallback(audio_file))
     client.subscribe()

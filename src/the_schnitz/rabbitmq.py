@@ -1,3 +1,4 @@
+import msgpack
 import pika
 
 from flask import current_app, g
@@ -49,8 +50,7 @@ def init_rabbitmq(app):
 
 class RabbitMQProducer:
     def __init__(self, channel, exchange):
-        self.channel = channel
-        self.exchange = exchange
+        self.channel, self.exchange = channel, exchange
 
         self.channel.exchange_declare(exchange=self.exchange,
                                       exchange_type='fanout')
@@ -58,14 +58,13 @@ class RabbitMQProducer:
     def publish(self, data):
         self.channel.basic_publish(exchange=self.exchange,
                                    routing_key="",
-                                   body=data)
+                                   body=msgpack.packb(data))
 
 
 class RabbitMQConsumer:
     def __init__(self, channel, exchange, queue, callback):
-        self.callback = callback
+        self.callback, self.channel = callback, channel
 
-        self.channel = channel
         self.channel.exchange_declare(exchange=exchange,
                                       exchange_type='fanout')
 
@@ -81,4 +80,4 @@ class RabbitMQConsumer:
 
     def __callback__(self, ch, method, properties, body):
         current_app.logger.debug('consumung message')
-        self.callback(body)
+        self.callback(msgpack.unpackb(body))
