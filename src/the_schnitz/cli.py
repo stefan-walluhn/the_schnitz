@@ -11,7 +11,7 @@ from the_schnitz.callbacks import MessagePackCallback, AudioCallback
 @click.option('-h', '--host', default="localhost")
 @click.option('-e', '--exchange', default="discoveries")
 @click.option('-q', '--queue', default="telegram")
-def telegram_client(host, exchange, queue):
+def log_client(host, exchange, queue):
     client = RabbitMQConsumer(host, exchange, queue, MessagePackCallback(print))
     client.subscribe()
 

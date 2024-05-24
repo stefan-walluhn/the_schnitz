@@ -15,6 +15,6 @@ dependencies = [
 ]
 
 [project.scripts]
-telegram-client = "the_schnitz.cli:telegram_client"
+log-client = "the_schnitz.cli:log_client"
 audio-client = "the_schnitz.cli:audio_client"
 test_it = "the_schnitz.cli:test_it"
