@@ -26,7 +26,7 @@ def close_rabbitmq_connection(e=None):
 def get_rabbitmq_channel():
     if 'rabbitmq_channel' not in g:
         current_app.logger.debug('establish rabbitmq channel')
-        g.rabbitmq_channel = get_rabbitmq_connection().channel() 
+        g.rabbitmq_channel = get_rabbitmq_connection().channel()
 
     return g.rabbitmq_channel
 
@@ -62,16 +62,14 @@ class RabbitMQProducer:
 
 
 class RabbitMQConsumer:
-    def __init__(self, host, exchange, queue, callback):
+    def __init__(self, channel, exchange, queue, callback):
         self.callback = callback
 
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host))
-
-        self.channel = connection.channel()
+        self.channel = channel
         self.channel.exchange_declare(exchange=exchange,
                                       exchange_type='fanout')
 
-        self.channel.queue_declare(queue)
+        self.channel.queue_declare(queue=queue, exclusive=True)
         self.channel.queue_bind(exchange=exchange, queue=queue)
 
         self.channel.basic_consume(queue=queue,
@@ -82,4 +80,5 @@ class RabbitMQConsumer:
         self.channel.start_consuming()
 
     def __callback__(self, ch, method, properties, body):
+        current_app.logger.debug('consumung message')
         self.callback(body)

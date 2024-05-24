@@ -1,37 +1,48 @@
 import click
-import pika
+import uuid
 
-from msgpack import packb
+from flask import current_app
+from flask.cli import FlaskGroup
 
-from the_schnitz.rabbitmq import RabbitMQConsumer, RabbitMQProducer
+from the_schnitz.app import create_app
+from the_schnitz.rabbitmq import RabbitMQConsumer, get_rabbitmq_channel
 from the_schnitz.callbacks import MessagePackCallback, AudioCallback
 
 
-@click.command()
-@click.option('-h', '--host', default="localhost")
-@click.option('-e', '--exchange', default="discoveries")
-@click.option('-q', '--queue', default="telegram")
-def log_client(host, exchange, queue):
-    client = RabbitMQConsumer(host, exchange, queue, MessagePackCallback(print))
+class QueueParamType(click.ParamType):
+    name = 'queue'
+
+    def convert(self, value, param, ctx):
+        return f"{value}-{str(uuid.uuid4())}"
+
+
+QUEUE = QueueParamType()
+
+
+@click.group(cls=FlaskGroup, create_app=create_app)
+def cli():
+    pass
+
+
+@cli.command('log_client')
+@click.option('-q', '--queue', default="log", type=QUEUE)
+def log_client(queue):
+    client = RabbitMQConsumer(
+        get_rabbitmq_channel(),
+        current_app.config['RABBITMQ_EXCHANGE'],
+        queue,
+        MessagePackCallback(print)
+    )
     client.subscribe()
 
 
-@click.command()
-@click.option('-h', '--host', default="localhost")
-@click.option('-e', '--exchange', default="discoveries")
-@click.option('-q', '--queue', default="audio")
+@cli.command('audio_client')
+@click.option('-q', '--queue', default="audio", type=QUEUE)
 @click.option('-f', '--audio-file', required=True)
-def audio_client(host, exchange, queue, audio_file):
-    client = RabbitMQConsumer(host, exchange, queue,
-                            MessagePackCallback(AudioCallback(audio_file)))
+def audio_client(queue, audio_file):
+    client = RabbitMQConsumer(
+        get_rabbitmq_channel(),
+        current_app.config['RABBITMQ_EXCHANGE'],
+        queue,
+        MessagePackCallback(AudioCallback(audio_file)))
     client.subscribe()
-
-
-@click.command()
-@click.option('-h', '--host', default="localhost")
-@click.option('-e', '--exchange', default="discoveries")
-def test_it(host, exchange):
-    data = {'text': 'test message'}
-    producer = RabbitMQProducer(host, exchange)
-
-    producer.publish(packb(data))

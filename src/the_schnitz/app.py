@@ -3,6 +3,7 @@ from msgpack import packb
 
 from the_schnitz.rabbitmq import init_rabbitmq, get_rabbitmq_producer
 
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object('the_schnitz.default_config')
