@@ -28,5 +28,4 @@ def discovery(location_id):
         producer.publish(schema.dump(location))
         repository.upsert_location(location)
 
-
     return schema.dump(location)

@@ -10,7 +10,8 @@ from the_schnitz.views import discovery
 def create_app():
     app = Flask(__name__)
     app.config.from_object('the_schnitz.default_config')
-    app.config.from_file(os.path.join(os.getcwd(), 'locations.yml'), load=locations.load)
+    app.config.from_file(os.path.join(os.getcwd(), 'locations.yml'),
+                         load=locations.load)
 
     init_rabbitmq(app)
 
