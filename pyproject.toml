@@ -9,10 +9,12 @@ version = "0.0.1"
 dependencies = [
   "Flask",
   "click",
+  "marshmallow",
   "msgpack",
   "pika",
   "playsound3",
   "pyyaml",
+  "redis",
 ]
 
 [project.scripts]
