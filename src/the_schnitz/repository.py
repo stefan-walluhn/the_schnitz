@@ -5,7 +5,7 @@ from the_schnitz.schema import LocationSchema
 class Repository(metaclass=ABCMeta):
     @abstractmethod
     def find_location(self, id):
-         ...
+        ...
 
     @abstractmethod
     def upsert_location(self, location):

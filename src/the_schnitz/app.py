@@ -3,6 +3,7 @@ import pika
 import redis
 
 from flask import Flask, current_app, g
+from werkzeug.local import LocalProxy
 
 from the_schnitz.repository import ConfigRepository, RedisRepository
 from the_schnitz.rabbitmq import RabbitMQProducer
@@ -95,3 +96,10 @@ def create_app():
     app.register_blueprint(discovery.bp)
 
     return app
+
+
+location_schema = LocalProxy(get_location_schema)
+config_repository = LocalProxy(get_config_repository)
+redis_repository = LocalProxy(get_redis_repository)
+rabbitmq_channel = LocalProxy(get_rabbitmq_channel)
+rabbitmq_producer = LocalProxy(get_rabbitmq_producer)

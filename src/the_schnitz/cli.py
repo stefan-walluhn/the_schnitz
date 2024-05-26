@@ -4,7 +4,7 @@ import uuid
 from flask import current_app
 from flask.cli import FlaskGroup
 
-from the_schnitz.app import create_app, get_rabbitmq_channel
+from the_schnitz.app import create_app, rabbitmq_channel
 from the_schnitz.rabbitmq import RabbitMQConsumer
 from the_schnitz.callbacks import AudioCallback
 
@@ -28,7 +28,7 @@ def cli():
 @click.option('-q', '--queue', default="log", type=QUEUE)
 def log_client(queue):
     client = RabbitMQConsumer(
-        get_rabbitmq_channel(),
+        rabbitmq_channel,
         current_app.config['RABBITMQ_EXCHANGE'],
         queue,
         print
@@ -41,7 +41,7 @@ def log_client(queue):
 @click.option('-f', '--audio-file', required=True)
 def audio_client(queue, audio_file):
     client = RabbitMQConsumer(
-        get_rabbitmq_channel(),
+        rabbitmq_channel,
         current_app.config['RABBITMQ_EXCHANGE'],
         queue,
         AudioCallback(audio_file))
