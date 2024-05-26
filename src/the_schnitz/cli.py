@@ -4,8 +4,8 @@ import uuid
 from flask import current_app
 from flask.cli import FlaskGroup
 
-from the_schnitz.app import create_app
-from the_schnitz.rabbitmq import RabbitMQConsumer, get_rabbitmq_channel
+from the_schnitz.app import create_app, get_rabbitmq_channel
+from the_schnitz.rabbitmq import RabbitMQConsumer
 from the_schnitz.callbacks import AudioCallback
 
 
