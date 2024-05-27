@@ -13,3 +13,11 @@ class LocationSchema(Schema):
     @post_load
     def make_location(self, data, **kwargs):
         return Location(**data)
+
+
+class LocationEventSchema(Schema):
+    event_type = fields.Method('get_event_type')
+    location = fields.Nested(LocationSchema)
+
+    def get_event_type(self, obj):
+        return obj.__class__.__name__
