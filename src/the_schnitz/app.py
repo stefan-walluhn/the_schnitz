@@ -7,7 +7,8 @@ from werkzeug.local import LocalProxy
 
 from the_schnitz.repository import ConfigRepository, RedisRepository
 from the_schnitz.rabbitmq import RabbitMQProducer
-from the_schnitz.schema import LocationSchema, LocationEventSchema
+from the_schnitz.schema import LocationSchema
+from the_schnitz.services import LocationService
 
 
 def get_location_schema():
@@ -15,13 +16,6 @@ def get_location_schema():
         g.location_schema = LocationSchema()
 
     return g.location_schema
-
-
-def get_location_event_schema():
-    if 'location_event_schema' not in g:
-        g.location_event_schema = LocationEventSchema()
-
-    return g.location_event_schema
 
 
 def get_config_repository():
@@ -87,6 +81,18 @@ def get_rabbitmq_producer():
     return g.rabbitmq_producer
 
 
+def get_location_service():
+    if 'location_service' not in g:
+        current_app.logger.debug('creating location service')
+        g.location_service = LocationService(
+            get_config_repository(),
+            get_redis_repository(),
+            get_rabbitmq_producer()
+        )
+
+    return g.location_service
+
+
 def create_app():
     from the_schnitz.config_loader import locations
     from the_schnitz.views import discovery
@@ -106,8 +112,5 @@ def create_app():
 
 
 location_schema = LocalProxy(get_location_schema)
-location_event_schema = LocalProxy(get_location_event_schema)
-config_repository = LocalProxy(get_config_repository)
-redis_repository = LocalProxy(get_redis_repository)
+location_service = LocalProxy(get_location_service)
 rabbitmq_channel = LocalProxy(get_rabbitmq_channel)
-rabbitmq_producer = LocalProxy(get_rabbitmq_producer)
