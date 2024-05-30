@@ -2,12 +2,14 @@ from flask import Blueprint
 from werkzeug.exceptions import NotFound
 
 from the_schnitz.app import location_schema, location_service
+from the_schnitz.decorators import login_required
 
 
 bp = Blueprint('discovery', __name__, url_prefix='/')
 
 
 @bp.route('/<uuid:location_id>')
+@login_required
 def discovery(location_id):
     location = location_service.find_location(location_id)
 

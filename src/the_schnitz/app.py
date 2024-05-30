@@ -8,7 +8,7 @@ from werkzeug.local import LocalProxy
 from the_schnitz.repository import ConfigRepository, RedisRepository
 from the_schnitz.rabbitmq import RabbitMQProducer
 from the_schnitz.schema import LocationSchema
-from the_schnitz.services import LocationService
+from the_schnitz.services import AuthorizationService, LocationService
 
 
 def get_location_schema():
@@ -93,24 +93,37 @@ def get_location_service():
     return g.location_service
 
 
+def get_authorization_service():
+    if 'authorization_service' not in g:
+        current_app.logger.debug('creating authorization service')
+        g.authorization_service = AuthorizationService(
+            current_app.config['PASSWORD']
+        )
+
+    return g.authorization_service
+
+
 def create_app():
     from the_schnitz.config_loader import locations
-    from the_schnitz.views import discovery
+    from the_schnitz.views import api, discovery
 
     app = Flask(__name__)
     app.config.from_object('the_schnitz.default_config')
     app.config.from_file(os.path.join(os.getcwd(), 'locations.yml'),
                          load=locations.load)
+    app.secret_key = app.config['SECRET_KEY']
 
     @app.teardown_appcontext
     def teardown_rabbitmq(e):
         close_rabbitmq_connection()
 
     app.register_blueprint(discovery.bp)
+    app.register_blueprint(api.bp)
 
     return app
 
 
 location_schema = LocalProxy(get_location_schema)
 location_service = LocalProxy(get_location_service)
+authorization_service = LocalProxy(get_authorization_service)
 rabbitmq_channel = LocalProxy(get_rabbitmq_channel)

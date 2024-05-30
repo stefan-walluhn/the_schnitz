@@ -27,3 +27,11 @@ class LocationService:
 
         self.producer.publish(self.location_event_schema.dump(event))
         self.repository.upsert_location(location)
+
+
+class AuthorizationService:
+    def __init__(self, password):
+        self.password = password
+
+    def is_authorized(self, password):
+        return self.password == password
