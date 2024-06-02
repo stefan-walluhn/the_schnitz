@@ -105,19 +105,24 @@ def get_authorization_service():
 
 def create_app():
     from the_schnitz.config_loader import locations
-    from the_schnitz.views import api, discovery
+    from the_schnitz.views import api
 
     app = Flask(__name__)
     app.config.from_object('the_schnitz.default_config')
     app.config.from_file(os.path.join(os.getcwd(), 'locations.yml'),
                          load=locations.load)
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Strict',
+    )
+
     app.secret_key = app.config['SECRET_KEY']
 
     @app.teardown_appcontext
     def teardown_rabbitmq(e):
         close_rabbitmq_connection()
 
-    app.register_blueprint(discovery.bp)
     app.register_blueprint(api.bp)
 
     return app

@@ -13,4 +13,5 @@ class LocationStatus(StrEnum):
 class Location:
     id: uuid.UUID
     name: str
+    description: str
     status: LocationStatus
