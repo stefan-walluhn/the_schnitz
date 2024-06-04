@@ -1,12 +1,12 @@
 import uuid
 
 from dataclasses import dataclass
-from enum import StrEnum, auto
+from enum import Enum
 
 
-class LocationStatus(StrEnum):
-    HIDDEN = auto()
-    FOUND = auto()
+class LocationStatus(Enum):
+    HIDDEN = 'hidden'
+    FOUND = 'found'
 
 
 @dataclass
