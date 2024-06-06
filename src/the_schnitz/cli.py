@@ -25,7 +25,7 @@ def cli():
 
 
 @cli.command('log_client')
-@click.option('-q', '--queue', default="log", type=QUEUE)
+@click.option('-q', '--queue', default="log")
 def log_client(queue):
     client = RabbitMQConsumer(
         rabbitmq_channel,
@@ -44,5 +44,6 @@ def audio_client(queue, audio_file):
         rabbitmq_channel,
         current_app.config['RABBITMQ_EXCHANGE'],
         queue,
-        AudioCallback(audio_file))
+        AudioCallback(audio_file),
+        exclusive=True)
     client.subscribe()

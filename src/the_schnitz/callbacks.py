@@ -8,5 +8,6 @@ class AudioCallback:
     def play(self):
         playsound(self.audio_file, block=False)
 
-    def __call__(self, _):
-        self.play()
+    def __call__(self, event):
+        if event.get('type') == 'LocationFoundEvent':
+            self.play()

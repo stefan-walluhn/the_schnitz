@@ -17,8 +17,8 @@ class LocationSchema(Schema):
 
 
 class LocationEventSchema(Schema):
-    event_type = fields.Method('get_event_type')
-    location = fields.Nested(LocationSchema)
+    type = fields.Method('get_type')
+    location = fields.Nested(LocationSchema(only=('id', 'name')))
 
-    def get_event_type(self, obj):
+    def get_type(self, obj):
         return obj.__class__.__name__
