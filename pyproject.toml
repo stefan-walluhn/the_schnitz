@@ -13,6 +13,7 @@ dependencies = [
   "msgpack",
   "pika",
   "playsound3",
+  "python-dotenv",
   "pyyaml",
   "redis",
 ]

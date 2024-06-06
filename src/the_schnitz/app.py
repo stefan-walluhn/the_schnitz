@@ -46,9 +46,7 @@ def get_rabbitmq_connection():
     if 'rabbitmq_connection' not in g:
         current_app.logger.debug('establish rabbitmq connection')
         g.rabbitmq_connection = pika.BlockingConnection(
-            pika.ConnectionParameters(
-                host=current_app.config['RABBITMQ_HOST']
-            )
+            pika.URLParameters(current_app.config['RABBITMQ_URL'])
         )
 
     return g.rabbitmq_connection
@@ -104,13 +102,14 @@ def get_authorization_service():
 
 
 def create_app():
-    from the_schnitz.config_loader import locations
+    from the_schnitz import config_loader
     from the_schnitz.views import api
 
     app = Flask(__name__)
-    app.config.from_object('the_schnitz.default_config')
+    app.config.from_object('the_schnitz.default_settings')
+    app.config.from_prefixed_env(prefix="THE_SCHNITZ")
     app.config.from_file(os.path.join(os.getcwd(), 'locations.yml'),
-                         load=locations.load)
+                         load=config_loader.locations)
     app.config.update(
         SESSION_COOKIE_SECURE=True,
         SESSION_COOKIE_HTTPONLY=True,
@@ -118,6 +117,7 @@ def create_app():
     )
 
     app.secret_key = app.config['SECRET_KEY']
+    assert app.secret_key is not None, 'SECRET_KEY must be set'
 
     @app.teardown_appcontext
     def teardown_rabbitmq(e):
