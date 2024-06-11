@@ -27,23 +27,29 @@ def cli():
 @cli.command('log_client')
 @click.option('-q', '--queue', default="log")
 def log_client(queue):
-    client = RabbitMQConsumer(
-        rabbitmq_channel,
-        current_app.config['RABBITMQ_EXCHANGE'],
-        queue,
-        print
-    )
-    client.subscribe()
+    while True:
+        client = RabbitMQConsumer(
+            rabbitmq_channel,
+            current_app.config['RABBITMQ_EXCHANGE'],
+            queue,
+            print
+        )
+
+        client.subscribe()
+        current_app.logger.error('Connection lost, try to reconnect')
 
 
 @cli.command('audio_client')
 @click.option('-q', '--queue', default="audio", type=QUEUE)
 @click.option('-f', '--audio-file', required=True)
 def audio_client(queue, audio_file):
-    client = RabbitMQConsumer(
-        rabbitmq_channel,
-        current_app.config['RABBITMQ_EXCHANGE'],
-        queue,
-        AudioCallback(audio_file),
-        exclusive=True)
-    client.subscribe()
+    while True:
+        client = RabbitMQConsumer(
+            rabbitmq_channel,
+            current_app.config['RABBITMQ_EXCHANGE'],
+            queue,
+            AudioCallback(audio_file),
+            exclusive=True)
+
+        client.subscribe()
+        current_app.logger.error('Connection lost, try to reconnect')

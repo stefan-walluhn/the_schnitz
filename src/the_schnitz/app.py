@@ -43,11 +43,12 @@ def get_redis_repository():
 
 
 def get_rabbitmq_connection():
-    if 'rabbitmq_connection' not in g:
-        current_app.logger.debug('establish rabbitmq connection')
+    if ('rabbitmq_connection' not in g) or (g.rabbitmq_connection.is_closed):
+        current_app.logger.debug('establishing rabbitmq connection')
         g.rabbitmq_connection = pika.BlockingConnection(
             pika.URLParameters(current_app.config['RABBITMQ_URL'])
         )
+        current_app.logger.info('established rabbitmq connection')
 
     return g.rabbitmq_connection
 
@@ -56,14 +57,16 @@ def close_rabbitmq_connection():
     connection = g.pop('rabbitmq_connection', None)
 
     if connection is not None:
-        current_app.logger.debug('close rabbitmq connection')
-        connection.close()
+        current_app.logger.debug('closing rabbitmq connection')
+        if connection.is_open:
+            connection.close()
 
 
 def get_rabbitmq_channel():
-    if 'rabbitmq_channel' not in g:
-        current_app.logger.debug('establish rabbitmq channel')
+    if ('rabbitmq_channel' not in g) or (g.rabbitmq_channel.is_closed):
+        current_app.logger.debug('establishing rabbitmq channel')
         g.rabbitmq_channel = get_rabbitmq_connection().channel()
+        current_app.logger.info('established rabbitmq channel')
 
     return g.rabbitmq_channel
 

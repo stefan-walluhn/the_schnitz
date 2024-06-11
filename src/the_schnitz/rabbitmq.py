@@ -1,5 +1,7 @@
 import msgpack
 
+from pika.exceptions import AMQPHeartbeatTimeout
+
 
 class RabbitMQProducer:
     def __init__(self, channel, exchange):
@@ -29,7 +31,10 @@ class RabbitMQConsumer:
                                    auto_ack=True)
 
     def subscribe(self):
-        self.channel.start_consuming()
+        try:
+            self.channel.start_consuming()
+        except AMQPHeartbeatTimeout:
+            return
 
     def __callback__(self, ch, method, properties, body):
         self.callback(msgpack.unpackb(body))
