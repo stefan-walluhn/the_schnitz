@@ -1,3 +1,5 @@
+import uuid
+
 from flask import Blueprint, request, session
 from werkzeug.exceptions import NotFound, Unauthorized
 
@@ -5,6 +7,7 @@ from the_schnitz.app import (authorization_service,
                              location_schema,
                              location_service)
 from the_schnitz.decorators import login_required
+from the_schnitz.location import Location, LocationStatus
 
 
 bp = Blueprint('api', __name__, url_prefix='/api')
@@ -27,7 +30,7 @@ def logout():
     return {'logout': 'success'}
 
 
-@bp.route('/discover/<uuid:location_id>', methods=['GET', 'POST'])
+@bp.route('/discover/<uuid:location_id>', methods=('GET', 'POST'))
 @login_required
 def location(location_id):
     location = location_service.find_location(location_id)
@@ -37,5 +40,23 @@ def location(location_id):
 
     if request.method == 'POST':
         location_service.mark_as_found(location)
+
+    return location_schema.dump(location)
+
+
+@bp.route('/discover/test_me', methods=('GET', 'POST'))
+@login_required
+def test():
+    status = (LocationStatus.HIDDEN if request.method == 'GET'
+              else LocationStatus.FOUND)
+
+    location = Location(
+        id=uuid.uuid4(),
+        name="Test-Location Kaninchenbau",
+        description=("Du konntest den Kaninchenbau erfolgreich finden. " +
+                     "Die Systeme funktionieren, dein Endgerät auch. " +
+                     "Es kann losgehen!"),
+        status=status
+    )
 
     return location_schema.dump(location)
