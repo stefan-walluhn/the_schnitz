@@ -52,7 +52,7 @@ def test():
 
     location = Location(
         id=uuid.uuid4(),
-        name="Test-Location Kaninchenbau",
+        name="Der Kaninchenbau",
         description=("Du konntest den Kaninchenbau erfolgreich finden. " +
                      "Die Systeme funktionieren, dein Endgerät auch. " +
                      "Es kann losgehen!"),
