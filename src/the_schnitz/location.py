@@ -15,3 +15,4 @@ class Location:
     name: str
     description: str
     status: LocationStatus
+    challenge: str = ''
