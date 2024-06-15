@@ -52,10 +52,12 @@ def test():
 
     location = Location(
         id=uuid.uuid4(),
-        name="Der Kaninchenbau",
-        description=("Du konntest den Kaninchenbau erfolgreich finden. " +
-                     "Die Systeme funktionieren, dein Endgerät auch. " +
-                     "Es kann losgehen!"),
+        name="Boarding",
+        description=("Du hast einen Fensterplatz im Flugzeug und " +
+                     "freust dich auf die lange erwatete Reise in den " +
+                     "Großstadtdschungel. Der Gurt ist angelegt, der " +
+                     "Sitz in einer aufrechten Position. Sobald wir die " +
+                     "Starterlaubnis vom Tower bekommen, kann es losgehen!"),
         status=status
     )
 
