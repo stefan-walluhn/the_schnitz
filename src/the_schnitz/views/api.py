@@ -54,7 +54,7 @@ def test():
         id=uuid.uuid4(),
         name="Boarding",
         description=("Du hast einen Fensterplatz im Flugzeug und " +
-                     "freust dich auf die lange erwatete Reise in den " +
+                     "freust dich auf die lange erwartete Reise in den " +
                      "Großstadtdschungel. Der Gurt ist angelegt, der " +
                      "Sitz in einer aufrechten Position. Sobald wir die " +
                      "Starterlaubnis vom Tower bekommen, kann es losgehen!"),
